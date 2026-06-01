@@ -1,0 +1,7 @@
+fastapi
+firebase-admin
+google-genai
+pydantic
+Pillow
+python-jose[cryptography]
+python-multipart
