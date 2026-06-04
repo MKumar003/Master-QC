@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, FilePlus, TrendingUp, User, Sparkles } from 'lucide-react'
+import { LayoutDashboard, FilePlus, TrendingUp, User, Sparkles, Briefcase } from 'lucide-react'
 
 export default function Sidebar({ isOpen, onClose }) {
   const links = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/clients', label: 'Clients', icon: Briefcase },
     { to: '/reports/new', label: 'New Report', icon: FilePlus },
     { to: '/trends', label: 'Trend Insights', icon: TrendingUp },
   ]

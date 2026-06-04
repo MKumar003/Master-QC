@@ -56,10 +56,13 @@ async function apiRequest(endpoint, options = {}) {
     }
     
     if (endpoint === '/ai/analyze-image') {
+      const guidelines = options.body instanceof FormData ? options.body.get('clientGuidelines') : null
       await new Promise(r => setTimeout(r, 1500))
       return {
           overallScore: 85,
-          summary: "This design looks great! The typography is clear and contrast is solid.",
+          summary: guidelines 
+            ? `This design looks great and perfectly aligns with the client's brand guidelines!`
+            : "This design looks great! The typography is clear and contrast is solid.",
           designScore: 90, colorScore: 75, typographyScore: 95, trendScore: 80,
           suggestions: ["Increase contrast on the main title"],
           checklistSuggestions: { "visual.0": { type: "pass", note: "High quality image" } }

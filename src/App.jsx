@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Clients from './pages/Clients'
 import NewReport from './pages/NewReport'
 import ReportDetail from './pages/ReportDetail'
 import TrendsDashboard from './pages/TrendsDashboard'
@@ -26,6 +27,7 @@ export default function App() {
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/clients" element={<Clients />} />
         <Route path="/reports/new" element={<NewReport />} />
         <Route path="/reports/:id" element={<ReportDetail />} />
         <Route path="/trends" element={<TrendsDashboard />} />

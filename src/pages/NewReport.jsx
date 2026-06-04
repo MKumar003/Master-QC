@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowRight, Save, Sparkles } from 'lucide-react'
 import { getChecklistForType, calculateProgress } from '../lib/checklistData'
 import { createReport, analyzeImage, analyzeVideo, checkVideoStatus } from '../lib/api'
+import { db } from '../lib/firebase'
+import { collection, getDocs } from 'firebase/firestore'
+import { useAuth } from '../contexts/AuthContext'
 import ChecklistSection from '../components/ChecklistSection'
 import FileUploader from '../components/FileUploader'
 import VideoUploader from '../components/VideoUploader'
@@ -12,6 +15,7 @@ import ProgressRing from '../components/ProgressRing'
 
 export default function NewReport() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [step, setStep] = useState(1) // 1: Type, 2: Upload/AI, 3: Checklist
   const [type, setType] = useState('video')
   const [title, setTitle] = useState('')
@@ -28,6 +32,25 @@ export default function NewReport() {
   
   // Submit State
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Clients State
+  const [clients, setClients] = useState([])
+  const [selectedClientId, setSelectedClientId] = useState('')
+
+  useEffect(() => {
+    async function loadClients() {
+      if (!user) return
+      try {
+        const clientsRef = collection(db, 'users', user.uid, 'clients')
+        const snapshot = await getDocs(clientsRef)
+        const clientsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        setClients(clientsData)
+      } catch (err) {
+        console.error('Failed to load clients', err)
+      }
+    }
+    loadClients()
+  }, [user])
 
   const handleTypeSelect = (selectedType) => {
     setType(selectedType)
@@ -48,6 +71,13 @@ export default function NewReport() {
     setIsAnalyzing(true)
     const formData = new FormData()
     formData.append('file', file)
+
+    if (selectedClientId) {
+      const selectedClient = clients.find(c => c.id === selectedClientId)
+      if (selectedClient && selectedClient.brandGuidelines) {
+        formData.append('clientGuidelines', selectedClient.brandGuidelines)
+      }
+    }
 
     try {
       if (type === 'photo') {
@@ -182,6 +212,22 @@ export default function NewReport() {
                 value={title}
                 onChange={e => setTitle(e.target.value)}
               />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Client / Brand (Optional)</label>
+              <select 
+                className="form-input" 
+                value={selectedClientId} 
+                onChange={e => setSelectedClientId(e.target.value)}
+              >
+                <option value="">No Client (General AI Analysis)</option>
+                {clients.map(client => (
+                  <option key={client.id} value={client.id}>
+                    {client.name} {client.industry ? `(${client.industry})` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
