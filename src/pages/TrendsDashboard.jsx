@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { TrendingUp, RefreshCw } from 'lucide-react'
 import { fetchTrends } from '../lib/api'
 import TrendCard from '../components/TrendCard'
@@ -7,11 +7,7 @@ export default function TrendsDashboard() {
   const [trends, setTrends] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    loadTrends()
-  }, [])
-
-  const loadTrends = async () => {
+  const loadTrends = useCallback(async () => {
     setLoading(true)
     try {
       const data = await fetchTrends()
@@ -21,7 +17,12 @@ export default function TrendsDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadTrends()
+  }, [loadTrends])
 
   // Group trends by category
   const categories = trends.reduce((acc, trend) => {

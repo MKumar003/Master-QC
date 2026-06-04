@@ -11,19 +11,19 @@ export default function Dashboard() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
+    async function loadReports() {
+      try {
+        const data = await fetchReports()
+        setReports(data || [])
+      } catch (err) {
+        console.error(err)
+        setError('Failed to load reports')
+      } finally {
+        setLoading(false)
+      }
+    }
     loadReports()
   }, [])
-
-  const loadReports = async () => {
-    try {
-      const data = await fetchReports()
-      setReports(data || [])
-    } catch (err) {
-      setError('Failed to load reports')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const stats = {
     total: reports.length,

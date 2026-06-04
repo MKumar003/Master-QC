@@ -20,21 +20,20 @@ export default function ReportDetail() {
   const [showDelete, setShowDelete] = useState(false)
 
   useEffect(() => {
+    async function loadReport() {
+      try {
+        const data = await fetchReport(id)
+        setReport(data)
+        setChecklist(data.checklist || {})
+      } catch (err) {
+        console.error(err)
+        alert('Failed to load report')
+      } finally {
+        setLoading(false)
+      }
+    }
     loadReport()
   }, [id])
-
-  const loadReport = async () => {
-    try {
-      const data = await fetchReport(id)
-      setReport(data)
-      setChecklist(data.checklist || {})
-    } catch (err) {
-      console.error(err)
-      alert('Failed to load report')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleItemChange = (sectionKey, itemIdx, updatedItem) => {
     setChecklist(prev => {

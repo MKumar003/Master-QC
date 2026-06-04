@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Video, Image as ImageIcon, ArrowRight, Save, Sparkles } from 'lucide-react'
+import { ArrowRight, Save, Sparkles } from 'lucide-react'
 import { getChecklistForType, calculateProgress } from '../lib/checklistData'
 import { createReport, analyzeImage, analyzeVideo, checkVideoStatus } from '../lib/api'
 import ChecklistSection from '../components/ChecklistSection'
@@ -8,6 +8,7 @@ import FileUploader from '../components/FileUploader'
 import VideoUploader from '../components/VideoUploader'
 import AIAnalysisCard from '../components/AIAnalysisCard'
 import VideoAIAnalysisCard from '../components/VideoAIAnalysisCard'
+import ProgressRing from '../components/ProgressRing'
 
 export default function NewReport() {
   const navigate = useNavigate()

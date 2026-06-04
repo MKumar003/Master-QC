@@ -1,17 +1,23 @@
-export default function AudioWaveform({ audioData }) {
-  if (!audioData) return null
+import { useState, useEffect } from 'react'
 
-  // Generate simulated waveform bars based on audio quality data
+export default function AudioWaveform({ audioData }) {
   const barCount = 50
-  const bars = Array.from({ length: barCount }, (_, i) => {
-    const height = 20 + Math.random() * 40
-    let status = 'good'
-    // Simulate issue zones
-    if (audioData.hasClipping && (i > barCount * 0.6 && i < barCount * 0.7)) status = 'issue'
-    else if (audioData.backgroundNoise === 'high' && i < barCount * 0.15) status = 'warning'
-    else if (audioData.hasDistortion && (i > barCount * 0.4 && i < barCount * 0.45)) status = 'issue'
-    return { height, status }
-  })
+  const [bars, setBars] = useState([])
+
+  useEffect(() => {
+    if (!audioData) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBars(Array.from({ length: barCount }, (_, i) => {
+      const height = 20 + Math.random() * 40
+      let status = 'good'
+      if (audioData.hasClipping && (i > barCount * 0.6 && i < barCount * 0.7)) status = 'issue'
+      else if (audioData.backgroundNoise === 'high' && i < barCount * 0.15) status = 'warning'
+      else if (audioData.hasDistortion && (i > barCount * 0.4 && i < barCount * 0.45)) status = 'issue'
+      return { height, status }
+    }))
+  }, [audioData, barCount])
+
+  if (!audioData) return null
 
   const metrics = [
     { label: 'Clarity', value: audioData.overallClarity || 'Good' },

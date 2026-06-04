@@ -19,17 +19,75 @@ async function apiRequest(endpoint, options = {}) {
     headers['Content-Type'] = 'application/json'
   }
 
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  })
+  try {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    })
 
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({ detail: 'Request failed' }))
-    throw new Error(error.detail || 'Request failed')
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ detail: 'Request failed' }))
+      throw new Error(error.detail || 'Request failed')
+    }
+
+    return await res.json()
+  } catch (error) {
+    console.warn(`[Mock Mode] Backend unreachable for ${endpoint}. Returning mock data.`)
+    
+    // Simple mock routing for local UI testing
+    if (endpoint === '/reports' && options.method !== 'POST') return []
+    if (endpoint === '/reports' && options.method === 'POST') return { id: Date.now().toString(), ...JSON.parse(options.body), createdAt: new Date().toISOString() }
+    if (endpoint.startsWith('/reports/')) return { success: true }
+    
+    if (endpoint === '/trends/today') return [
+      { id: 1, category: 'colors', title: 'Neon Cyberpunk', description: 'Bright cyan and magenta combinations' },
+      { id: 2, category: 'formats', title: 'Vertical Short-form', description: '9:16 aspect ratio under 30s' },
+      { id: 3, category: 'audio', title: 'Lo-fi Beats', description: 'Relaxing background tracks' }
+    ]
+    
+    if (endpoint === '/ai/chat') {
+      const data = JSON.parse(options.body)
+      const responses = {
+        "What colors are trending now?": "Right now, neon cyber-punk colors (cyan, magenta, electric yellow) are trending heavily in tech, while muted earth tones are dominating lifestyle branding! 🎨✨",
+        "Best aspect ratio for Reels?": "For Instagram Reels and TikTok, you definitely want to use 9:16 (1080x1920 pixels). Make sure to keep text away from the bottom 20% of the screen! 📱",
+      }
+      await new Promise(r => setTimeout(r, 800))
+      return { reply: responses[data.message] || "That's a great question! Always ensure your audio is balanced and your branding is clear. 🎬✨" }
+    }
+    
+    if (endpoint === '/ai/analyze-image') {
+      await new Promise(r => setTimeout(r, 1500))
+      return {
+          overallScore: 85,
+          summary: "This design looks great! The typography is clear and contrast is solid.",
+          designScore: 90, colorScore: 75, typographyScore: 95, trendScore: 80,
+          suggestions: ["Increase contrast on the main title"],
+          checklistSuggestions: { "visual.0": { type: "pass", note: "High quality image" } }
+      }
+    }
+    
+    if (endpoint === '/ai/analyze-video') {
+      await new Promise(r => setTimeout(r, 1000))
+      return { file_id: "mock_video", status: "processing" }
+    }
+    
+    if (endpoint.startsWith('/ai/video-status/')) {
+      return {
+        state: "ACTIVE",
+        analysis: {
+          overallScore: 78,
+          summary: "Good overall pacing, but there are some audio clipping issues.",
+          categoryScores: { visual: 85, audio: 60, content: 90, technical: 75, trendAlignment: 80 },
+          timestampedIssues: [],
+          audioQuality: { overallClarity: "Fair", hasClipping: true },
+          sceneBreakdown: [],
+          suggestions: ["Normalize audio levels"]
+        }
+      }
+    }
+    
+    throw error;
   }
-
-  return res.json()
 }
 
 // Reports

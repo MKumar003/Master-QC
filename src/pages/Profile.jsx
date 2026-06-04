@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Key, Save } from 'lucide-react'
+import { Key } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Profile() {

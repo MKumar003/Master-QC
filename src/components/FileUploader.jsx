@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, Image } from 'lucide-react'
+import { Image } from 'lucide-react'
 
 export default function FileUploader({ onFileSelect, accept, file, uploading, progress }) {
   const onDrop = useCallback((acceptedFiles) => {

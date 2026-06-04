@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Film, CheckCircle, XCircle, Loader } from 'lucide-react'
+import { Film, CheckCircle, XCircle } from 'lucide-react'
 
 export default function VideoUploader({ onFileSelect, file, uploading, progress, processingStatus }) {
   const onDrop = useCallback((acceptedFiles) => {
